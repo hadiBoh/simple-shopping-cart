@@ -47,7 +47,7 @@ class Controller{
 			return Controller.instance
 		}
         this.db = dbReturn() 
-        this.card = [];    
+        this.cart = [];    
         Controller.instance = this
     }
 
@@ -55,71 +55,71 @@ class Controller{
         return this.db
    }
 
-   setToCard(id){
-        this.card.push(this.db[id])
+   setTocart(id){
+        this.cart.push(this.db[id])
    }
 
-   deleteFromCard(id){
-      this.card.splice(id,1) 
+   deleteFromcart(id){
+      this.cart.splice(id,1) 
    }
 
    getUniqQuntity(){
-        return [... new Set(this.card)].length
+        return [... new Set(this.cart)].length
    }
 
    getUniqeItems(){
-    return [... new Set(this.card)]
+    return [... new Set(this.cart)]
    }
 }
 
 
-//add items to cards wrapper
+//add items to carts wrapper
 function addItems(){
     const obj = new Controller
     const db = obj.getDB()
-    let cards = ""
+    let carts = ""
     const indexes = Object.keys(db)
     for(let i=0; i< indexes.length; i++){
-    cards += `
-        <div class="card" id="${i}">
+    carts += `
+        <div class="cart" id="${i}">
             <a href="#"><img src="images/${db[i].name}.JPG"></a>
             <a href="#">Buy ${db[i].name}</a>
             <h2 class="price">$${db[i].price}</h2>
-            <a href="#" id="add-to-card-btn">add to card</a>
+            <a href="#" id="add-to-cart-btn">add to cart</a>
         </div>
     `
     }
-    document.querySelector(".card-wrapper").innerHTML = cards
+    document.querySelector(".cart-wrapper").innerHTML = carts
 }
 addItems()
 
 
-//add to card click handler
-const allAddCardBtns = document.querySelectorAll("#add-to-card-btn")
-allAddCardBtns.forEach(btn=>{
+//add to cart click handler
+const allAddcartBtns = document.querySelectorAll("#add-to-cart-btn")
+allAddcartBtns.forEach(btn=>{
     btn.addEventListener("click",(e)=>{
         e.preventDefault()
         const id = e.target.parentElement.getAttribute("id")
         const obj = new Controller
-        obj.setToCard(parseInt(id))
-        showAddedCards(obj)
+        obj.setTocart(parseInt(id))
+        showAddedcarts(obj)
         showAddedMessage()
     })
 })
 
 
-//put clicked items to our card
-function showAddedCards(obj){
+//put clicked items to our cart
+function showAddedcarts(obj){
     const uniqQuantity = obj.getUniqQuntity()
-    showQuantityOnCardIcon(uniqQuantity)
-    addInfoToCardIconModal(obj)
+    showQuantityOncartIcon(uniqQuantity)
+    addInfoTocartIconModal(obj)
 }
 
-function showQuantityOnCardIcon(q){
+function showQuantityOncartIcon(q){
     document.querySelector(".little-quantity").innerHTML = q
 }
 
-function addInfoToCardIconModal(obj){
+function addInfoTocartIconModal(obj){
     const uniqItems =  obj.getUniqeItems()
     let atached = ""
     uniqItems.forEach(item=>{
@@ -128,7 +128,7 @@ function addInfoToCardIconModal(obj){
     atached += `
         <input class="checkout" type="button" value="checkout">
     `
-    document.querySelector(".card-modal").innerHTML  = atached   
+    document.querySelector(".cart-modal").innerHTML  = atached   
 }
 
 function showAddedMessage(){

@@ -47,7 +47,8 @@ class Controller{
 			return Controller.instance
 		}
         this.db = dbReturn() 
-        this.cart = [];    
+        this.cart = [];  
+        this.setedIds = []  
         Controller.instance = this
     }
 
@@ -59,8 +60,16 @@ class Controller{
         this.cart.push(this.db[id])
    }
 
+   setId(id){
+        this.setedIds.push(id)
+   }
+
    deleteFromcart(id){
-      this.cart.splice(id,1) 
+        this.cart.splice(id,1) 
+   }
+
+   deleteId(id){
+        this.setedIds.splice(id,1)
    }
 
    getUniqQuntity(){
@@ -69,6 +78,11 @@ class Controller{
 
    getUniqeItems(){
     return [... new Set(this.cart)]
+   }
+
+   isAlreadyAdded(id){
+        const result = this.setedIds.filter(item => item === id)
+        return result
    }
 }
 
@@ -99,20 +113,31 @@ const allAddcartBtns = document.querySelectorAll("#add-to-cart-btn")
 allAddcartBtns.forEach(btn=>{
     btn.addEventListener("click",(e)=>{
         e.preventDefault()
-        const id = e.target.parentElement.getAttribute("id")
+        const id = parseInt(e.target.parentElement.getAttribute("id"))
         const obj = new Controller
-        obj.setTocart(parseInt(id))
+        obj.setTocart(id)
+        obj.setId(id)
+        const checkForAlreadyAddedResponse = checkForAlreadyAdded(obj,id)
+        if (checkForAlreadyAddedResponse) return
         showAddedcarts(obj)
-        showAddedMessage()
     })
 })
 
+//check already added to cart or not 
+function checkForAlreadyAdded(obj,id){
+    const isAlredyAdd = obj.isAlreadyAdded(id)
+    if (isAlredyAdd.length > 1) {
+        showAddedMessage("error-message")
+        return true
+    }
+}
 
 //put clicked items to our cart
 function showAddedcarts(obj){
     const uniqQuantity = obj.getUniqQuntity()
     showQuantityOncartIcon(uniqQuantity)
     addInfoTocartIconModal(obj)
+    showAddedMessage("succes-message")
 }
 
 function showQuantityOncartIcon(q){
@@ -131,8 +156,8 @@ function addInfoTocartIconModal(obj){
     document.querySelector(".cart-modal").innerHTML  = atached   
 }
 
-function showAddedMessage(){
-    const message = document.querySelector(".message")
+function showAddedMessage(type){
+    const message = document.querySelector("."+type)
     message.classList.add("active")
     setTimeout(()=>{
         message.classList.remove("active")
